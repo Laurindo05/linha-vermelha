@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Linha Vermelha - Nosso Calendário</title>
+    <style>
+        body {
+            background-color: #f7f2e8; color: #3e2723; font-family: Arial, sans-serif;
+            margin: 0; padding-top: 40px; border: 5px solid #8b0000;
+            min-height: 100vh; box-sizing: border-box; position: relative;
+        }
+        body::before {
+            content: ""; position: absolute; top: 0; left: 50%; width: 2px; height: 100%;
+            background: linear-gradient(to bottom, #8b0000, #ff3333, #8b0000); z-index: 1; opacity: 0.2;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; text-align: center; position: relative; z-index: 2; }
+        .lanterninha { font-size: 28px; color: #8b0000; margin-bottom: -15px; }
+        h1 { color: #8b0000; font-size: 2.5em; margin-bottom: 5px; }
+        .sub { font-size: 16px; color: #5d4037; font-weight: bold; margin-bottom: 40px; }
+        
+        .music-container {
+            position: fixed; top: 20px; right: 20px; display: flex; flex-direction: column;
+            align-items: center; z-index: 1000; background: rgba(255, 255, 255, 0.9);
+            padding: 12px; border-radius: 12px; border: 1px solid #8b0000;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); backdrop-filter: blur(5px); width: 110px; text-align: center;
+        }
+        .vinyl-disc {
+            width: 70px; height: 70px; border-radius: 50%;
+            background: radial-gradient(circle, #ff3333 12%, #111 13%, #222 20%, #111 30%, #222 40%, #111 50%, #222 60%, #111 70%);
+            border: 2px solid #000; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); cursor: pointer;
+            position: relative; display: flex; align-items: center; justify-content: center;
+        }
+        .vinyl-disc::after { content: ''; width: 10px; height: 10px; background-color: #111; border-radius: 50%; border: 2px solid #fff; }
+        @keyframes rotacionar { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .rodando { animation: rotacionar 3s linear infinite; }
+        .music-title { font-size: 11px; color: #8b0000; margin-top: 8px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
+        .music-tip { font-size: 9px; color: #666; margin-top: 2px; }
+
+        .calendario-wrapper { background-color: #fffaf0; border: 4px solid #8b0000; border-radius: 8px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); max-width: 750px; margin: 0 auto 50px auto; }
+        .mes-titulo { font-size: 24px; color: #8b0000; font-weight: bold; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; }
+        .dias-semana { display: grid; grid-template-columns: repeat(7, 1fr); font-weight: bold; color: #8b0000; margin-bottom: 10px; border-bottom: 2px solid #e5dec9; padding-bottom: 5px; }
+        .dias-grade { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
+        
+        .dia-box { background-color: #fff; border: 1px solid #e5dec9; aspect-ratio: 1 / 1; position: relative; padding: 5px; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; box-sizing: border-box; border-radius: 4px; }
+        .dia-numero { font-size: 12px; font-weight: bold; color: #7d6657; position: relative; z-index: 3; }
+        .dia-box.vazio { background-color: transparent; border: none; }
+        
+        .dia-box.com-foto { border: 2px solid #8b0000; cursor: pointer; transition: transform 0.2s; }
+        .dia-box.com-foto:hover { transform: scale(1.12); z-index: 5; box-shadow: 0 4px 12px rgba(139,0,0,0.2); }
+        .dia-box img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 2px; z-index: 1; }
+        .dia-box.com-foto .dia-numero { background: rgba(255, 255, 255, 0.9); padding: 1px 4px; border-radius: 3px; color: #8b0000; }
+        .dia-box.aniversario-final { border: 2.5px dashed #ff3333; }
+
+        .btn-voltar { background-color: #8b0000; color: white; border: none; padding: 12px 30px; cursor: pointer; border-radius: 5px; font-size: 16px; font-weight: bold; text-decoration: none; display: inline-block; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+        .btn-voltar:hover { background-color: #d32f2f; }
+
+        .zoom-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.9); z-index: 2000; flex-direction: column; justify-content: center; align-items: center; }
+        .zoom-modal img { max-width: 90%; max-height: 75vh; border: 5px solid #fff; border-radius: 4px; box-shadow: 0 5px 25px rgba(0,0,0,0.5); transform: scale(0.9); transition: transform 0.3s ease; }
+        .zoom-caption { color: #fff; font-size: 18px; font-weight: bold; margin-top: 15px; text-shadow: 1px 1px 4px rgba(0,0,0,0.8); }
+        .zoom-close { position: absolute; top: 20px; right: 30px; color: #fff; font-size: 40px; font-weight: bold; cursor: pointer; user-select: none; }
+        .zoom-close:hover { color: #ff3333; }
+    </style>
+</head>
+<body>
+
+<div class="music-container">
+    <div class="vinyl-disc" id="disco" onclick="controlarMusica()"></div>
+    <div class="music-title" id="tituloMusica">Carregando...</div>
+    <div class="controls" style="display: flex; justify-content: center; gap: 10px; margin-top: 5px;">
+    <button onclick="mudarMusica(-1)" style="background: none; border: none; color: #8b0000; font-size: 14px; cursor: pointer; font-weight: bold;">⏮</button>
+<button onclick="mudarMusica(1)" style="background: none; border: none; color: #8b0000; font-size: 14px; cursor: pointer; font-weight: bold;">⏭</button>
+    </div>
+</div>
+
+<audio id="meuAudio" loop></audio>
+<div class="container">
+    <div class="lanterninha">🏮</div>
+    <h1>Nosso Destino nas Datas</h1>
+    <div class="sub">— Nossa linha do tempo de 2025 a 2026 —</div>
+    <div id="calendarios-container"></div>
+    <a href="home.html" class="btn-voltar">← Voltar pro Início</a>
+</div>
+
+<div id="modalZoom" class="zoom-modal" onclick="fecharZoom()">
+    <span class="zoom-close" onclick="fecharZoom()">&times;</span>
+    <img id="fotoExpandida" src="" alt="Zoom">
+    <div id="legendaData" class="zoom-caption"></div>
+</div>
+<script>
+const fotosEspecificas = {
+    "2025-05-24": { arquivo: "maio24.jpg", legenda: "24 de Maio de 2025 ♡ O início de tudo" },
+    "2025-06-13": { arquivo: "junho13.jpg", legenda: "13 de Junho de 2025" },
+    "2025-07-05": { arquivo: "julho05.jpg", legenda: "05 de Julho de 2025" },
+    "2025-07-18": { arquivo: "julho18.jpg", legenda: "18 de Julho de 2025" },
+    "2025-08-21": { arquivo: "agosto21.jpg", legenda: "21 de Agosto de 2025" },
+    "2025-09-13": { arquivo: "setembro13.jpg", legenda: "13 de Setembro de 2025" },
+    "2025-11-08": { arquivo: "novembro08.jpg", legenda: "08 de Novembro de 2025" },
+    "2025-01-24": { arquivo: "janeiro24.jpg", legenda: "24 de Janeiro de 2025" },
+    "2026-01-29": { arquivo: "janeiro29.jpg", legenda: "29 de Janeiro de 2026" },
+    "2026-02-27": { arquivo: "fevereiro27.jpg", legenda: "27 de Fevereiro de 2026" },
+    "2026-03-28": { arquivo: "marco28.jpg", legenda: "28 de Março de 2026 ♡ Nosso Primeiro Ano!" }
+};
+
+const dadosMeses = [
+    { id: "05", ano: "2025", nome: "Maio 2025", dias: 31, vazio: 4 },
+    { id: "06", ano: "2025", nome: "Junho 2025", dias: 30, vazio: 0 },
+    { id: "07", ano: "2025", nome: "Julho 2025", dias: 31, vazio: 2 },
+    { id: "08", ano: "2025", nome: "Agosto 2025", dias: 31, vazio: 5 },
+    { id: "09", ano: "2025", nome: "Setembro 2025", dias: 30, vazio: 1 },
+    { id: "10", ano: "2025", nome: "Outubro 2025", dias: 31, vazio: 3 },
+    { id: "11", ano: "2025", nome: "Novembro 2025", dias: 30, vazio: 6 },
+    { id: "12", ano: "2025", nome: "Dezembro 2025", dias: 31, vazio: 1 },
+    { id: "01", ano: "2026", nome: "Janeiro 2026", dias: 31, vazio: 4 },
+    { id: "02", ano: "2026", nome: "Fevereiro 2026", dias: 28, vazio: 0 },
+    { id: "03", ano: "2026", nome: "Março 2026", dias: 28, vazio: 1, limite: 28 }
+];
+
+const container = document.getElementById("calendarios-container");
+dadosMeses.forEach(m => {
+    let html = `<div class="calendario-wrapper"><div class="mes-titulo">${m.nome}</div><div class="dias-semana"><div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div></div><div class="dias-grade">`;
+    for (let v = 0; v < m.vazio; v++) { html += `<div class="dia-box vazio"></div>`; }
+    let totalDias = m.limite ? m.limite : m.dias;
+    for (let d = 1; d <= totalDias; d++) {
+        let diaFormatado = d < 10 ? '0' + d : d;
+        let anoCorreto = (m.id === "01" && d === 24) ? "2025" : m.ano;
+        let chaveData = `${anoCorreto}-${m.id}-${diaFormatado}`;
+        if (fotosEspecificas[chaveData]) {
+            let classeExtra = (chaveData === "2026-03-28") ? "aniversario-final" : "";
+            html += `<div class="dia-box com-foto ${classeExtra}" onclick="abrirZoom('${chaveData}')"><span class="dia-numero">${d}</span><img src="${fotosEspecificas[chaveData].arquivo}"></div>`;
+        } else { html += `<div class="dia-box"><span class="dia-numero">${d}</span></div>`; }
+    }
+    html += `</div></div>`; container.innerHTML += html;
+});
+
+function abrirZoom(chaveData) {
+    const modal = document.getElementById("modalZoom"); const imgExpandida = document.getElementById("fotoExpandida"); const legenda = document.getElementById("legendaData");
+    imgExpandida.src = fotosEspecificas[chaveData].arquivo; legenda.innerText = fotosEspecificas[chaveData].legenda; modal.style.display = "flex";
+    setTimeout(() => { imgExpandida.style.transform = "scale(1)"; }, 10);
+}
+function fecharZoom() { const modal = document.getElementById("modalZoom"); const imgExpandida = document.getElementById("fotoExpandida"); imgExpandida.style.transform = "scale(0.9)"; modal.style.display = "none"; }
+function controlarMusica() { var audio = document.getElementById("meuAudio"); var disco = document.getElementById("disco"); if (audio.paused) { audio.play(); disco.classList.add("rodando"); } else { audio.pause(); disco.classList.remove("rodando"); } }
+window.addEventListener('DOMContentLoaded', () => { var audio = document.getElementById("meuAudio"); var disco = document.getElementById("disco"); audio.play().then(() => { disco.classList.add("rodando"); }).catch(error => {}); });
+// CONFIGURAÇÃO DA PLAYLIST DE MÚSICAS REAIS
+const playlist = [
+    { arquivo: "dia,lugarehora.mp3", titulo: "Dia, Lugar e Hora" },
+    { arquivo: "desnecessario.mp3", titulo: "Desnecessário" },
+    { arquivo: "deusémuitobom.mp3", titulo: "Deus é muito bom" },
+    { arquivo: "terocoraçãonochão.mp3", titulo: "Ter o coração no chão" },
+    { arquivo: "amaresó.mp3", titulo: "Amar e Só" }
+];
+let indiceAtual = 0;
+const audio = document.getElementById("meuAudio");
+const disco = document.getElementById("disco");
+const txtTitulo = document.getElementById("tituloMusica");
+
+function carregarMusica(index) {
+    audio.src = playlist[index].arquivo;
+    txtTitulo.innerText = playlist[index].titulo;
+    audio.load(); // Força o navegador a carregar o arquivo de áudio
+}
+function controlarMusica() {
+    if (audio.paused) { 
+        audio.play().then(() => { disco.classList.add("rodando"); }).catch(e => {}); 
+    } else { 
+        audio.pause(); disco.classList.remove("rodando"); 
+    }
+}
+function mudarMusica(direcao) {
+    let estavaTocando = !audio.paused;
+    indiceAtual += direcao;
+    if (indiceAtual >= playlist.length) indiceAtual = 0;
+    if (indiceAtual < 0) indiceAtual = playlist.length - 1;
+    carregarMusica(indiceAtual);
+    if (estavaTocando) { audio.play().then(() => { disco.classList.add("rodando"); }); }
+}
+window.addEventListener('DOMContentLoaded', () => {
+    carregarMusica(indiceAtual);
+});
+</script>
+</body>
+</html>

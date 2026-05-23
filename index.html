@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Linha Vermelha - Login</title>
+    <style>
+        body {
+            background-color: #f7f2e8; /* Fundo bege suave */
+            color: #3e2723; /* Texto marrom escuro */
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            border: 5px solid #8b0000; /* Borda vermelha ao redor */
+            position: relative;
+        }
+        
+        /* Linha vermelha decorativa passando pelo fundo do login */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 2px;
+            height: 100%;
+            background: linear-gradient(to bottom, #8b0000, #ff3333, #8b0000);
+            z-index: 1;
+            opacity: 0.3;
+        }
+
+        .login-box {
+            background-color: #fffaf0; /* Caixa marfim claro */
+            padding: 40px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            max-width: 350px;
+            width: 100%;
+            border: 1px solid rgba(139, 0, 0, 0.2);
+            position: relative;
+            z-index: 2;
+        }
+        h2 { color: #8b0000; margin-bottom: 5px; }
+        .subtitle { color: #5d4037; font-size: 14px; margin-bottom: 20px; }
+        input {
+            width: 85%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #8b0000;
+            background: #fff;
+            color: #3e2723;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        input::placeholder { color: #8d6e63; }
+        button {
+            background-color: #8b0000;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+            width: 93%;
+            margin-top: 10px;
+            font-size: 15px;
+            transition: background 0.3s;
+        }
+        button:hover { background-color: #d32f2f; }
+        .status-msg {
+            font-size: 13px;
+            color: #d32f2f;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-box">
+    <h2>Linha Vermelha</h2>
+    <div class="subtitle" id="box-subtitle">Identifique-se para entrar no nosso destino</div>
+    
+    <input type="email" id="email" placeholder="Seu e-mail">
+    <input type="password" id="senha" placeholder="Senha (Nossa data especial)">
+    
+    <button onclick="entrarNoSite()">Acessar Nosso Destino</button>
+    <div class="status-msg" id="msg-erro"></div>
+</div>
+
+<script>
+var emailSalvo = localStorage.getItem("visitante_email");
+if (emailSalvo) {
+    document.getElementById("email").value = emailSalvo;
+    document.getElementById("box-subtitle").innerText = "Que bom ver você de volta!";
+}
+
+function entrarNoSite() {
+    var emailInserido = document.getElementById("email").value.trim();
+    var senhaInserida = document.getElementById("senha").value.trim();
+    var msgErro = document.getElementById("msg-erro");
+
+    if (emailInserido === "" || senhaInserida === "") {
+        msgErro.innerText = "Por favor, preencha todos os campos.";
+        return;
+    }
+
+    var senhaCorreta = "24/05/2025";
+
+    if (senhaInserida === senhaCorreta) {
+        localStorage.setItem("visitante_email", emailInserido);
+        window.location.href = "home.html";
+    } else {
+        msgErro.innerText = "Senha incorreta. Dica: Use o formato DD/MM/AAAA.";
+    }
+}
+</script>
+
+</body>
+</html>
