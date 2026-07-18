@@ -245,13 +245,14 @@ async function salvarNovaLembranca() {
     } catch (error) {
         alert("Erro ao salvar: " + error.message);
         botao.innerText = "Guardar no Nosso Destino ❤️"; botao.disabled = false;
-    }
 }
-
 window.addEventListener('DOMContentLoaded', () => {
     carregarMusica(indiceAtual);
     carregarLembrancasSalvas();
+    renderizarCalendarios(); 
 });
+
+
 </script>
 </body>
 </html>
