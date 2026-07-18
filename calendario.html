@@ -1,4 +1,74 @@
- <body>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Linha Vermelha - Nosso Calendário</title>
+    <style>
+        body {
+            background-color: #f7f2e8; color: #3e2723; font-family: Arial, sans-serif;
+            margin: 0; padding-top: 40px; border: 5px solid #8b0000;
+            min-height: 100vh; box-sizing: border-box; position: relative;
+        }
+        body::before {
+            content: ""; position: absolute; top: 0; left: 50%; width: 2px; height: 100%;
+            background: linear-gradient(to bottom, #8b0000, #ff3333, #8b0000); z-index: 1; opacity: 0.2;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; text-align: center; position: relative; z-index: 2; }
+        .lanterninha { font-size: 28px; color: #8b0000; margin-bottom: -15px; }
+        h1 { color: #8b0000; font-size: 2.5em; margin-bottom: 5px; }
+        .sub { font-size: 16px; color: #5d4037; font-weight: bold; margin-bottom: 40px; }
+        
+        .music-container {
+            position: fixed; top: 20px; right: 20px; display: flex; flex-direction: column;
+            align-items: center; z-index: 1000; background: rgba(255, 255, 255, 0.9);
+            padding: 12px; border-radius: 12px; border: 1px solid #8b0000;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); backdrop-filter: blur(5px); width: 110px; text-align: center;
+        }
+        .vinyl-disc {
+            width: 70px; height: 70px; border-radius: 50%;
+            background: radial-gradient(circle, #ff3333 12%, #111 13%, #222 20%, #111 30%, #222 40%, #111 50%, #222 60%, #111 70%);
+            border: 2px solid #000; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); cursor: pointer;
+            position: relative; display: flex; align-items: center; justify-content: center;
+        }
+        .vinyl-disc::after { content: ''; width: 10px; height: 10px; background-color: #111; border-radius: 50%; border: 2px solid #fff; }
+        @keyframes rotacionar { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .rodando { animation: rotacionar 3s linear infinite; }
+        .music-title { font-size: 11px; color: #8b0000; margin-top: 8px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
+
+        .calendario-wrapper { background-color: #fffaf0; border: 4px solid #8b0000; border-radius: 8px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); max-width: 750px; margin: 0 auto 50px auto; }
+        .mes-titulo { font-size: 24px; color: #8b0000; font-weight: bold; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; }
+        .dias-semana { display: grid; grid-template-columns: repeat(7, 1fr); font-weight: bold; color: #8b0000; margin-bottom: 10px; border-bottom: 2px solid #e5dec9; padding-bottom: 5px; }
+        .dias-grade { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
+        
+        .dia-box { background-color: #fff; border: 1px solid #e5dec9; aspect-ratio: 1 / 1; position: relative; padding: 5px; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; box-sizing: border-box; border-radius: 4px; cursor: pointer; transition: transform 0.2s; }
+        .dia-box:hover { transform: scale(1.08); border-color: #8b0000; z-index: 5; }
+        .dia-numero { font-size: 12px; font-weight: bold; color: #7d6657; position: relative; z-index: 3; }
+        .dia-box.vazio { background-color: transparent; border: none; cursor: default; }
+        .dia-box.vazio:hover { transform: none; }
+        
+        .dia-box img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 2px; z-index: 1; }
+        .dia-box.com-foto .dia-numero { background: rgba(255, 255, 255, 0.9); padding: 1px 4px; border-radius: 3px; color: #8b0000; }
+        .dia-box.aniversario-final { border: 2.5px dashed #ff3333; }
+
+        .btn-voltar { background-color: #8b0000; color: white; border: none; padding: 12px 30px; cursor: pointer; border-radius: 5px; font-size: 16px; font-weight: bold; text-decoration: none; display: inline-block; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+        .btn-voltar:hover { background-color: #d32f2f; }
+
+        .upload-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); z-index: 3000; justify-content: center; align-items: center; }
+        .upload-box { background-color: #fffaf0; border: 3px solid #8b0000; padding: 30px; border-radius: 8px; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        .upload-box h3 { color: #8b0000; margin-top: 0; }
+        .upload-box input[type="file"] { margin: 15px 0; width: 100%; }
+        .upload-box input[type="text"] { width: 90%; padding: 10px; border: 1px solid #8b0000; border-radius: 4px; margin-bottom: 20px; }
+        .upload-box button { background-color: #8b0000; color: white; border: none; padding: 10px 20px; border-radius: 4px; font-weight: bold; cursor: pointer; }
+        .upload-box button:hover { background-color: #d32f2f; }
+        .close-upload { float: right; font-size: 24px; font-weight: bold; cursor: pointer; color: #8b0000; margin-top: -15px; }
+
+        .zoom-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.9); z-index: 2000; flex-direction: column; justify-content: center; align-items: center; }
+        .zoom-modal img { max-width: 90%; max-height: 75vh; border: 5px solid #fff; border-radius: 4px; box-shadow: 0 5px 25px rgba(0,0,0,0.5); }
+        .zoom-caption { color: #fff; font-size: 18px; font-weight: bold; margin-top: 15px; text-shadow: 1px 1px 4px rgba(0,0,0,0.8); }
+        .zoom-close { position: absolute; top: 20px; right: 30px; color: #fff; font-size: 40px; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
 
 <div class="music-container">
     <div class="vinyl-disc" id="disco" onclick="controlarMusica()"></div>
