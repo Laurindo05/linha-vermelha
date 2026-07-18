@@ -1,8 +1,9 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <title>Linha Vermelha - Nosso Calendário</title>
+    <script src="https://unpkg.com"></script>
     <style>
         body {
             background-color: #f7f2e8; color: #3e2723; font-family: Arial, sans-serif;
@@ -108,12 +109,11 @@
         <button onclick="salvarNovaLembranca()">Guardar no Nosso Destino ❤️</button>
     </div>
 </div>
- <script src="https://jsdelivr.net"></script>
 <script>
 const SUPABASE_URL = "https://supabase.co";
 const SUPABASE_KEY = "sb_publishable_J2Ap_gTBI0kvmoBWN_5E4g_xfFOi2XPXP";
 
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const supabaseClient = Supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const fotosEspecificas = {
     "2025-05-24": { arquivo: "maio24.jpg", legenda: "24 de Maio de 2025 ♡ O início de tudo" },
@@ -250,6 +250,7 @@ async function salvarNovaLembranca() {
 window.addEventListener('DOMContentLoaded', () => {
     carregarMusica(indiceAtual);
     carregarLembrancasSalvas();
+    renderizarCalendarios();
 });
 </script>
 </body>
