@@ -66,7 +66,7 @@
     <div class="vinyl-disc" id="disco" onclick="controlarMusica()"></div>
     <div class="music-title" id="tituloMusica">Carregando...</div>
     <div class="controls" style="display: flex; justify-content: center; gap: 10px; margin-top: 5px;">
-        <button onclick="mudarMusica(-1)" style="background: none; border: none; color: #8b0000; font-size: 14px; cursor: pointer; font-weight: bold;">       ⏮</button>
+        <button onclick="mudarMusica(-1)" style="background: none; border: none; color: #8b0000; font-size: 14px; cursor: pointer; font-weight: bold;">⏮</button>
         <button onclick="mudarMusica(1)" style="background: none; border: none; color: #8b0000; font-size: 14px; cursor: pointer; font-weight: bold;">⏭</button>
     </div>
 </div>
@@ -112,7 +112,11 @@ const dadosMeses = [
     { id: "12", ano: "2025", nome: "Dezembro 2025", dias: 31, vazio: 1 },
     { id: "01", ano: "2026", nome: "Janeiro 2026", dias: 31, vazio: 4 },
     { id: "02", ano: "2026", nome: "Fevereiro 2026", dias: 28, vazio: 0 },
-    { id: "03", ano: "2026", nome: "Março 2026", dias: 28, vazio: 1, limite: 28 }
+    { id: "03", ano: "2026", nome: "Março 2026", dias: 31, vazio: 1 }, // Liberado Março inteiro
+    { id: "04", ano: "2026", nome: "Abril 2026", dias: 30, vazio: 4 }, // Novo mês!
+    { id: "05", ano: "2026", nome: "Maio 2026", dias: 31, vazio: 6 },  // Novo mês!
+    { id: "06", ano: "2026", nome: "Junho 2026", dias: 30, vazio: 2 }, // Novo mês!
+    { id: "07", ano: "2026", nome: "Julho 2026", dias: 31, vazio: 4 }  // Novo mês!
 ];
 
 const container = document.getElementById("calendarios-container");
@@ -142,7 +146,6 @@ function abrirZoom(chaveData) {
 }
 function fecharZoom() { const modal = document.getElementById("modalZoom"); const imgExpandida = document.getElementById("fotoExpandida"); imgExpandida.style.transform = "scale(0.9)"; modal.style.display = "none"; }
 
-// PLAYLIST DE MÚSICAS REAIS
 const playlist = [
     { arquivo: "dia,lugarehora.mp3", titulo: "Dia, Lugar e Hora" },
     { arquivo: "dcsnecessario.mp3", titulo: "Dcs Necessário" },
@@ -160,7 +163,7 @@ function controlarMusica() { if (audio.paused) { audio.play(); disco.classList.a
 function mudarMusica(direcao) {
     let estavaTocando = !audio.paused; indiceAtual += direcao;
     if (indiceAtual >= playlist.length) indiceAtual = 0; if (indiceAtual < 0) indiceAtual = playlist.length - 1;
-    carregarMusica(indiceAtual); if (estavaTocando) { audio.play(); disco.classList.add("rodando"); }
+    carregarMusica(indiceAtual); if (estavaTocando) { audio.play(); disco.classList.add("rotando"); }
 }
 
 window.addEventListener('DOMContentLoaded', () => {
