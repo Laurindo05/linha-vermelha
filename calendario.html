@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Linha Vermelha - Nosso Calendário</title>
-    <script src="https://unpkg.com"></script>
     <style>
         body {
             background-color: #f7f2e8; color: #3e2723; font-family: Arial, sans-serif;
@@ -41,12 +40,12 @@
         .dias-semana { display: grid; grid-template-columns: repeat(7, 1fr); font-weight: bold; color: #8b0000; margin-bottom: 10px; border-bottom: 2px solid #e5dec9; padding-bottom: 5px; }
         .dias-grade { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
         
-        .dia-box { background-color: #fff; border: 1px solid #e5dec9; aspect-ratio: 1 / 1; position: relative; padding: 5px; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; box-sizing: border-box; border-radius: 4px; cursor: pointer; transition: transform 0.2s; }
-        .dia-box:hover { transform: scale(1.08); border-color: #8b0000; z-index: 5; }
+        .dia-box { background-color: #fff; border: 1px solid #e5dec9; aspect-ratio: 1 / 1; position: relative; padding: 5px; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; box-sizing: border-box; border-radius: 4px; }
         .dia-numero { font-size: 12px; font-weight: bold; color: #7d6657; position: relative; z-index: 3; }
-        .dia-box.vazio { background-color: transparent; border: none; cursor: default; }
-        .dia-box.vazio:hover { transform: none; }
+        .dia-box.vazio { background-color: transparent; border: none; }
         
+        .dia-box.com-foto { border: 2px solid #8b0000; cursor: pointer; transition: transform 0.2s; }
+        .dia-box.com-foto:hover { transform: scale(1.12); z-index: 5; box-shadow: 0 4px 12px rgba(139,0,0,0.2); }
         .dia-box img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 2px; z-index: 1; }
         .dia-box.com-foto .dia-numero { background: rgba(255, 255, 255, 0.9); padding: 1px 4px; border-radius: 3px; color: #8b0000; }
         .dia-box.aniversario-final { border: 2.5px dashed #ff3333; }
@@ -54,19 +53,11 @@
         .btn-voltar { background-color: #8b0000; color: white; border: none; padding: 12px 30px; cursor: pointer; border-radius: 5px; font-size: 16px; font-weight: bold; text-decoration: none; display: inline-block; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
         .btn-voltar:hover { background-color: #d32f2f; }
 
-        .upload-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); z-index: 3000; justify-content: center; align-items: center; }
-        .upload-box { background-color: #fffaf0; border: 3px solid #8b0000; padding: 30px; border-radius: 8px; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
-        .upload-box h3 { color: #8b0000; margin-top: 0; }
-        .upload-box input[type="file"] { margin: 15px 0; width: 100%; }
-        .upload-box input[type="text"] { width: 90%; padding: 10px; border: 1px solid #8b0000; border-radius: 4px; margin-bottom: 20px; }
-        .upload-box button { background-color: #8b0000; color: white; border: none; padding: 10px 20px; border-radius: 4px; font-weight: bold; cursor: pointer; }
-        .upload-box button:hover { background-color: #d32f2f; }
-        .close-upload { float: right; font-size: 24px; font-weight: bold; cursor: pointer; color: #8b0000; margin-top: -15px; }
-
         .zoom-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.9); z-index: 2000; flex-direction: column; justify-content: center; align-items: center; }
-        .zoom-modal img { max-width: 90%; max-height: 75vh; border: 5px solid #fff; border-radius: 4px; box-shadow: 0 5px 25px rgba(0,0,0,0.5); }
+        .zoom-modal img { max-width: 90%; max-height: 75vh; border: 5px solid #fff; border-radius: 4px; box-shadow: 0 5px 25px rgba(0,0,0,0.5); transform: scale(0.9); transition: transform 0.3s ease; }
         .zoom-caption { color: #fff; font-size: 18px; font-weight: bold; margin-top: 15px; text-shadow: 1px 1px 4px rgba(0,0,0,0.8); }
-        .zoom-close { position: absolute; top: 20px; right: 30px; color: #fff; font-size: 40px; font-weight: bold; cursor: pointer; }
+        .zoom-close { position: absolute; top: 20px; right: 30px; color: #fff; font-size: 40px; font-weight: bold; cursor: pointer; user-select: none; }
+        .zoom-close:hover { color: #ff3333; }
     </style>
 </head>
 <body>
@@ -75,7 +66,7 @@
     <div class="vinyl-disc" id="disco" onclick="controlarMusica()"></div>
     <div class="music-title" id="tituloMusica">Carregando...</div>
     <div class="controls" style="display: flex; justify-content: center; gap: 10px; margin-top: 5px;">
-        <button onclick="mudarMusica(-1)" style="background: none; border: none; color: #8b0000; font-size: 14px; cursor: pointer; font-weight: bold;">⏮</button>
+        <button onclick="mudarMusica(-1)" style="background: none; border: none; color: #8b0000; font-size: 14px; cursor: pointer; font-weight: bold;">       ⏮</button>
         <button onclick="mudarMusica(1)" style="background: none; border: none; color: #8b0000; font-size: 14px; cursor: pointer; font-weight: bold;">⏭</button>
     </div>
 </div>
@@ -95,26 +86,7 @@
     <img id="fotoExpandida" src="" alt="Zoom">
     <div id="legendaData" class="zoom-caption"></div>
 </div>
-
-<div id="modalUpload" class="upload-modal">
-    <div class="upload-box">
-        <span class="close-upload" onclick="fecharUpload()">&times;</span>
-        <h3 id="uploadTitulo">Adicionar Lembrança</h3>
-        <p style="font-size: 13px; color: #7d6657;" id="uploadDataTexto"></p>
-        
-        <input type="file" id="inputFoto" accept="image/*">
-        <input type="text" id="inputLegenda" placeholder="Escreva uma legenda fofa para este dia...">
-        
-        <br>
-        <button onclick="salvarNovaLembranca()">Guardar no Nosso Destino ❤️</button>
-    </div>
-</div>
 <script>
-const SUPABASE_URL = "https://supabase.co";
-const SUPABASE_KEY = "sb_publishable_J2Ap_gTBI0kvmoBWN_5E4g_xfFOi2XPXP";
-
-const supabaseClient = Supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
 const fotosEspecificas = {
     "2025-05-24": { arquivo: "maio24.jpg", legenda: "24 de Maio de 2025 ♡ O início de tudo" },
     "2025-06-13": { arquivo: "junho13.jpg", legenda: "13 de Junho de 2025" },
@@ -128,9 +100,6 @@ const fotosEspecificas = {
     "2026-02-27": { arquivo: "fevereiro27.jpg", legenda: "27 de Fevereiro de 2026" },
     "2026-03-28": { arquivo: "marco28.jpg", legenda: "28 de Março de 2026 ♡ Nosso Primeiro Ano!" }
 };
-
-let fotosDinamicas = {}; 
-let dataSelecionadaGlobal = "";
 
 const dadosMeses = [
     { id: "05", ano: "2025", nome: "Maio 2025", dias: 31, vazio: 4 },
@@ -146,48 +115,34 @@ const dadosMeses = [
     { id: "03", ano: "2026", nome: "Março 2026", dias: 28, vazio: 1, limite: 28 }
 ];
 
-function renderizarCalendarios() {
-    const container = document.getElementById("calendarios-container");
-    container.innerHTML = "";
-    dadosMeses.forEach(m => {
-        let html = `<div class="calendario-wrapper"><div class="mes-titulo">${m.nome}</div><div class="dias-semana"><div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div></div><div class="dias-grade">`;
-        for (let v = 0; v < m.vazio; v++) { html += `<div class="dia-box vazio"></div>`; }
-        let totalDias = m.limite ? m.limite : m.dias;
-        for (let d = 1; d <= totalDias; d++) {
-            let diaFormatado = d < 10 ? '0' + d : d;
-            let anoCorreto = (m.id === "01" && d === 24) ? "2025" : m.ano;
-            let chaveData = `${anoCorreto}-${m.id}-${diaFormatado}`;
+const container = document.getElementById("calendarios-container");
+dadosMeses.forEach(m => {
+    let html = `<div class="calendario-wrapper"><div class="mes-titulo">${m.nome}</div><div class="dias-semana"><div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div></div><div class="dias-grade">`;
+    for (let v = 0; v < m.vazio; v++) { html += `<div class="dia-box vazio"></div>`; }
+    let totalDias = m.limite ? m.limite : m.dias;
+    for (let d = 1; d <= totalDias; d++) {
+        let diaFormatado = d < 10 ? '0' + d : d;
+        let anoCorreto = (m.id === "01" && d === 24) ? "2025" : m.ano;
+        let chaveData = `${anoCorreto}-${m.id}-${diaFormatado}`;
+        
+        if (fotosEspecificas[chaveData]) {
             let classeExtra = (chaveData === "2026-03-28") ? "aniversario-final" : "";
-            let fotoExistente = fotosEspecificas[chaveData] || fotosDinamicas[chaveData];
-            if (fotoExistente) {
-                html += `<div class="dia-box com-foto ${classeExtra}" onclick="cliqueDia('${chaveData}', true)"><span class="dia-numero">${d}</span><img src="${fotoExistente.arquivo || fotoExistente}"></div>`;
-            } else {
-                html += `<div class="dia-box" onclick="cliqueDia('${chaveData}', false)"><span class="dia-numero">${d}</span></div>`;
-            }
+            html += `<div class="dia-box com-foto ${classeExtra}" onclick="abrirZoom('${chaveData}')"><span class="dia-numero">${d}</span><img src="${fotosEspecificas[chaveData].arquivo}"></div>`;
+        } else {
+            html += `<div class="dia-box"><span class="dia-numero">${d}</span></div>`;
         }
-        html += `</div></div>`; container.innerHTML += html;
-    });
-}
-
-function cliqueDia(chaveData, temFoto) {
-    if (temFoto) {
-        let fotoObj = fotosEspecificas[chaveData] || { arquivo: fotosDinamicas[chaveData], legenda: "Nosso momento em " + chaveData };
-        const modal = document.getElementById("modalZoom");
-        const imgExpandida = document.getElementById("fotoExpandida");
-        const legenda = document.getElementById("legendaData");
-        imgExpandida.src = fotoObj.arquivo || fotoObj;
-        legenda.innerText = fotoObj.legenda || "Data Especial";
-        modal.style.display = "flex";
-    } else {
-        dataSelecionadaGlobal = chaveData;
-        document.getElementById("uploadDataTexto").innerText = "Data selecionada: " + chaveData;
-        document.getElementById("modalUpload").style.display = "flex";
     }
+    html += `</div></div>`; container.innerHTML += html;
+});
+
+function abrirZoom(chaveData) {
+    const modal = document.getElementById("modalZoom"); const imgExpandida = document.getElementById("fotoExpandida"); const legenda = document.getElementById("legendaData");
+    imgExpandida.src = fotosEspecificas[chaveData].arquivo; legenda.innerText = fotosEspecificas[chaveData].legenda; modal.style.display = "flex";
+    setTimeout(() => { imgExpandida.style.transform = "scale(1)"; }, 10);
 }
+function fecharZoom() { const modal = document.getElementById("modalZoom"); const imgExpandida = document.getElementById("fotoExpandida"); imgExpandida.style.transform = "scale(0.9)"; modal.style.display = "none"; }
 
-function fecharZoom() { document.getElementById("modalZoom").style.display = "none"; }
-function fecharUpload() { document.getElementById("modalUpload").style.display = "none"; }
-
+// PLAYLIST DE MÚSICAS REAIS
 const playlist = [
     { arquivo: "dia,lugarehora.mp3", titulo: "Dia, Lugar e Hora" },
     { arquivo: "dcsnecessario.mp3", titulo: "Dcs Necessário" },
@@ -208,49 +163,8 @@ function mudarMusica(direcao) {
     carregarMusica(indiceAtual); if (estavaTocando) { audio.play(); disco.classList.add("rodando"); }
 }
 
-async function carregarLembrancasSalvas() {
-    try {
-        const { data, error } = await supabaseClient.storage.from('fotos').list('');
-        if (error) throw error;
-        if (data) {
-            data.forEach(arquivo => {
-                let dataChave = arquivo.name.split('.')[0];
-                const { data: urlData } = supabaseClient.storage.from('fotos').getPublicUrl(arquivo.name);
-                fotosDinamicas[dataChave] = urlData.publicUrl;
-            });
-            renderizarCalendarios();
-        }
-    } catch (e) { console.log(e); }
-}
-
-async function salvarNovaLembranca() {
-    const inputFoto = document.getElementById("inputFoto");
-    if (!inputFoto.files || inputFoto.files.length === 0) { alert("Por favor, selecione uma foto! ❤️"); return; }
-    const arquivoFoto = inputFoto.files[0];
-    
-    const botao = document.querySelector(".upload-box button");
-    botao.innerText = "Eternizando momento... ⏳"; botao.disabled = true;
-    const extensao = arquivoFoto.name.split('.').pop();
-    const nomeArquivoFinal = `${dataSelecionadaGlobal}.${extensao}`;
-
-    try {
-        const { error: uploadError } = await supabaseClient.storage
-            .from('fotos').upload(nomeArquivoFinal, arquivoFoto, { cacheControl: '3600', upsert: true });
-        if (uploadError) throw uploadError;
-        alert("Momento guardado com sucesso! 😍");
-        fecharUpload();
-        inputFoto.value = "";
-        carregarLembrancasSalvas();
-    } catch (error) {
-        alert("Erro ao salvar: " + error.message);
-        botao.innerText = "Guardar no Nosso Destino ❤️"; botao.disabled = false;
-    }
-}
-
 window.addEventListener('DOMContentLoaded', () => {
     carregarMusica(indiceAtual);
-    carregarLembrancasSalvas();
-    renderizarCalendarios();
 });
 </script>
 </body>
