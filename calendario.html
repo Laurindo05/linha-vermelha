@@ -68,13 +68,13 @@
         .zoom-close { position: absolute; top: 20px; right: 30px; color: #fff; font-size: 40px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
-<script src="https://jsdelivr.net"></script>
 <body>
+
 <div class="music-container">
     <div class="vinyl-disc" id="disco" onclick="controlarMusica()"></div>
     <div class="music-title" id="tituloMusica">Carregando...</div>
     <div class="controls" style="display: flex; justify-content: center; gap: 10px; margin-top: 5px;">
-        <button onclick="mudarMusica(-1)" style="background: none; border: none; color: #8b0000; font-size: 14px; cursor: pointer; font-weight: bold;">       ⏮</button>
+        <button onclick="mudarMusica(-1)" style="background: none; border: none; color: #8b0000; font-size: 14px; cursor: pointer; font-weight: bold;">⏮</button>
         <button onclick="mudarMusica(1)" style="background: none; border: none; color: #8b0000; font-size: 14px; cursor: pointer; font-weight: bold;">⏭</button>
     </div>
 </div>
@@ -108,13 +108,12 @@
         <button onclick="salvarNovaLembranca()">Guardar no Nosso Destino ❤️</button>
     </div>
 </div>
-
-<script src="https://jsdelivr.net"></script>
+ <script src="https://jsdelivr.net"></script>
 <script>
-const SUPABASE_URL = "https://supabase.co"; 
+const SUPABASE_URL = "https://supabase.co";
 const SUPABASE_KEY = "sb_publishable_J2Ap_gTBI0kvmoBWN_5E4g_xfFOi2XPXP";
 
-const supabaseClient = Supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const fotosEspecificas = {
     "2025-05-24": { arquivo: "maio24.jpg", legenda: "24 de Maio de 2025 ♡ O início de tudo" },
@@ -130,7 +129,7 @@ const fotosEspecificas = {
     "2026-03-28": { arquivo: "marco28.jpg", legenda: "28 de Março de 2026 ♡ Nosso Primeiro Ano!" }
 };
 
-let fotosDinâmicas = {}; 
+let fotosDinamicas = {}; 
 let dataSelecionadaGlobal = "";
 
 const dadosMeses = [
@@ -159,7 +158,7 @@ function renderizarCalendarios() {
             let anoCorreto = (m.id === "01" && d === 24) ? "2025" : m.ano;
             let chaveData = `${anoCorreto}-${m.id}-${diaFormatado}`;
             let classeExtra = (chaveData === "2026-03-28") ? "aniversario-final" : "";
-            let fotoExistente = fotosEspecificas[chaveData] || fotosDinâmicas[chaveData];
+            let fotoExistente = fotosEspecificas[chaveData] || fotosDinamicas[chaveData];
             if (fotoExistente) {
                 html += `<div class="dia-box com-foto ${classeExtra}" onclick="cliqueDia('${chaveData}', true)"><span class="dia-numero">${d}</span><img src="${fotoExistente.arquivo || fotoExistente}"></div>`;
             } else {
@@ -172,7 +171,7 @@ function renderizarCalendarios() {
 
 function cliqueDia(chaveData, temFoto) {
     if (temFoto) {
-        let fotoObj = fotosEspecificas[chaveData] || { arquivo: fotosDinâmicas[chaveData], legenda: "Nosso momento em " + chaveData };
+        let fotoObj = fotosEspecificas[chaveData] || { arquivo: fotosDinamicas[chaveData], legenda: "Nosso momento em " + chaveData };
         const modal = document.getElementById("modalZoom");
         const imgExpandida = document.getElementById("fotoExpandida");
         const legenda = document.getElementById("legendaData");
@@ -217,7 +216,7 @@ async function carregarLembrancasSalvas() {
             data.forEach(arquivo => {
                 let dataChave = arquivo.name.split('.')[0];
                 const { data: urlData } = supabaseClient.storage.from('fotos').getPublicUrl(arquivo.name);
-                fotosDinâmicas[dataChave] = urlData.publicUrl;
+                fotosDinamicas[dataChave] = urlData.publicUrl;
             });
             renderizarCalendarios();
         }
@@ -245,14 +244,13 @@ async function salvarNovaLembranca() {
     } catch (error) {
         alert("Erro ao salvar: " + error.message);
         botao.innerText = "Guardar no Nosso Destino ❤️"; botao.disabled = false;
+    }
 }
+
 window.addEventListener('DOMContentLoaded', () => {
     carregarMusica(indiceAtual);
     carregarLembrancasSalvas();
-    renderizarCalendarios(); 
 });
-
-
 </script>
 </body>
 </html>
